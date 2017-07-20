@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<style type="text/css">
+	body { margin: 0; padding: 0; background: #000;}
+	canvas { display: block; margin: 0 auto; background: #fff }
+</style>
+
+</head>
+
+<body>
+	
+	<canvas></canvas>
+	<script>
+	
+		/*window.requestAnimFrame = (function(){
+			return window.requestAnimationFrame       ||
+				   window.webkitRequestAnimationFrame ||
+				   window.mozRequestAnimationFrame	  ||
+				   window.oRequestAnimationFrame	  ||
+				   window.msRequestAnimationFrame	  ||
+				   function(callback) {
+					window.setTimeout(callback, 1000 / 60);
+				   };
+		})(); */
+		
+	
+		var bubbleBurst = {
+		
+			width: 320,
+			height: 480,
+			ratio: null,
+			currentWidth: null,
+			currentHeight: null,
+			canvas: null,
+			ctx: null,
+			scale: 1,
+			offset: {top: 0, left: 0},
+			
+			init: function() {
+				bubbleBurst.ratio = bubbleBurst.width / bubbleBurst.height;
+				bubbleBurst.currentWidth = bubbleBurst.width;
+				bubbleBurst.currentHeight = bubbleBurst.height;
+				bubbleBurst.canvas = document.getElementsByTagName('canvas')[0];
+				bubbleBurst.canvas.width = bubbleBurst.width;
+				bubbleBurst.canvas.height = bubbleBurst.height;
+				bubbleBurst.ctx = bubbleBurst.canvas.getContext('2d');
+				bubbleBurst.resize();
+				
+				// bubbleBurst.Draw.clear();
+				// bubbleBurst.Draw.rect(120,120,150,150, 'green');
+				// bubbleBurst.Draw.circle(100, 100, 50, 'rgba(255,0,0,0.5)');
+				// bubbleBurst.Draw.text('Hello World', 100, 100, 10, '#000');
+				
+				window.addEventListener('click', function(e) {
+					e.preventDefault();
+					bubbleBurst.Input.set(e);
+				}, false);
+				
+				window.addEventListener('touchstart', function(e) {
+					e.preventDefault();
+					bubbleBurst.Input.set(e.touches[0]);
+				}, false);
+				
+				window.addEventListener('touchmove', function(e) {
+					e.preventDefault();
+				}, false);
+				
+				window.addEventListener('touchend', function(e) {
+					e.preventDefault();
+				}, false);
+				
+				//bubbleBurst.loop();
+			},
+			
+			//update: function() {
+			//
+			//},
+			
+			//render: function() {
+			//	bubbleBurst.Draw.clear();
+			//},
+			
+			//loop: function() {
+				//requestAnimFrame( bubbleBurst.loop );
+				
+				//bubbleBurst.update();
+				//bubbleBurst.render();
+			}
+			
+			resize: function() {
+				bubbleBurst.currentHeight = window.innerHeight;
+				bubbleBurst.currentWidth = bubbleBurst.currentHeight * bubbleBurst.ratio;
+				
+				if (bubbleBurst.android || bubbleBurst.ios) {
+					document.body.style.height = (window.innerHeight + 50) + 'px';
+				}
+				
+				bubbleBurst.ua = navigator.userAgent.toLowerCase();
+				bubbleBurst.android = bubbleBurst.ua.indexOf('android') > -1 ? true : false;
+				bubbleBurst.ios = ( bubbleBurst.ua.indexOf('iphone') > -1 || bubbleBurst.ua.indexOf('ipad') > -1 ) ? true : false; 
+				
+				bubbleBurst.canvas.style.width = bubbleBurst.currentWidth + 'px';
+				bubbleBurst.canvas.style.height = bubbleBurst.currentHeight + 'px';
+				
+				bubbleBurst.scale = bubbleBurst.currentWidth / bubbleBurst.width;
+				bubbleBurst.offset.top = bubbleBurst.canvas.offsetTop;
+				bubbleBurst.offset.left = bubbleBurst.canvas.offsetLeft;
+				
+				window.setTimeout(function() {
+					window.scrollTo(0,1);
+				}, 1);
+			}
+		
+		};
+		
+		bubbleBurst.Draw = {
+			clear: function() {
+				bubbleBurst.ctx.clearRect(0, 0, bubbleBurst.width, bubbleBurst.height);
+			},
+			
+			rect: function(x, y, w, h, col) {
+				bubbleBurst.ctx.fillStyle = col;
+				bubbleBurst.ctx.fillRect(x, y, w, h);
+			},
+			
+			circle: function(x, y, r, col) {
+				bubbleBurst.ctx.fillStyle = col;
+				bubbleBurst.ctx.beginPath();
+				bubbleBurst.ctx.arc(x + 5, y + 5, r, 0, Math.PI * 2, true);
+				bubbleBurst.ctx.closePath();
+				bubbleBurst.ctx.fill();
+			},
+			
+			text: function(string, x, y, size, col) {
+				bubbleBurst.ctx.font = 'bold ' + size + 'px Monospace';
+				bubbleBurst.ctx.fillStyle = col;
+				bubbleBurst.ctx.fillText(string, x, y);
+			}
+		};
+		
+		bubbleBurst.Input = {
+		
+			x: 0,
+			y: 0,
+			tapped: false,
+			
+			set: function(data) {
+				var offsetTop = bubbleBurst.canvas.offsetTop,
+					offsetLeft = bubbleBurst.canvas.offsetLeft;
+					scale = bubbleBurst.currentWidth / bubbleBurst.width;
+				
+				this.x = (data.pageX - bubbleBurst.offset.left) / bubbleBurst.scale;
+				this.y = (data.pageY - bubbleBurst.offset.top) / bubbleBurst.scale;
+				this.tapped = true;
+				
+				bubbleBurst.Draw.circle(this.x, this.y, 10, 'red');
+			}
+		};
+		
+		
+		window.addEventListener('load', bubbleBurst.init, false);
+		window.addEventListener('resize', bubbleBurst.resize, false);
+	
+	</script>
+</body>
+</html>
